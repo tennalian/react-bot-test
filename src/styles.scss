@@ -78,9 +78,6 @@ body{
 	    border: 0;
 	    background: #5cb85c;
 	    color: white;
-	    &:hover{
-	    	background: darken(#5cb85c, 10%);
-	    }
 	    &:focus{outline: none;}
 		}
 	}
