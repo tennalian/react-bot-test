@@ -10,6 +10,9 @@ const FAQ: string[] = [
 	'Подумай хорошо!',
 ];
 
+const AVATAR_DEFAULT = './img/1.jpg';
+const AVATAR_ANSWER = './img/2.jpg';
+
 interface IvanState {
 	questionArr: string | null;
 	answerArr: string | null;
@@ -37,6 +40,14 @@ export class Ivan extends React.Component<IvanProps, IvanState> {
 			time: null,
 			index: this.randomAnswer(0, FAQ.length - 1)
 		}
+	}
+
+	componentDidMount() {
+		// Прелоад второй аватарки, чтобы она не мигала при первом ответе
+		[AVATAR_DEFAULT, AVATAR_ANSWER].forEach((src) => {
+			const img = new Image();
+			img.src = src;
+		});
 	}
 
 	question(){
@@ -84,13 +95,13 @@ export class Ivan extends React.Component<IvanProps, IvanState> {
 
 	render() {
 		let { questionArr, answerArr, loading, time } = this.state;
-		let avatarSrc = (answerArr && !loading) ? './img/2.jpg' : './img/1.jpg';
+		let avatarSrc = (answerArr && !loading) ? AVATAR_ANSWER : AVATAR_DEFAULT;
 
 		let messages;
 		if (!questionArr && !answerArr) {
 			messages = (
 				<div className="msg msg-in">
-					<div className="msg-avatar"><img src="./img/1.jpg" alt="Иван" /></div>
+					<div className="msg-avatar"><img src={AVATAR_DEFAULT} alt="Иван" /></div>
 					<div className="msg-bubble">Ну давай же сюда свой вопрос!</div>
 				</div>
 			);
