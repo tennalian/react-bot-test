@@ -53,6 +53,7 @@ body{
 	.chat-body{
 		flex: 1;
 		overflow-y: auto;
+		overflow-x: hidden; /* хвостики баблов не должны рождать горизонтальный скролл */
 		padding: 20px 16px;
 		/* Фоновая «обои» в духе Telegram */
 		background:
@@ -61,8 +62,14 @@ body{
 			linear-gradient(160deg, #b5c7d3 0%, #cfe0d8 50%, #b9d0c5 100%);
 		display: flex;
 		flex-direction: column;
-		justify-content: flex-end; /* сообщения прижимаются к низу, как в мессенджере */
 		gap: 8px;
+
+		/* Сообщения прижимаются к низу, как в мессенджере; margin-top:auto,
+		   а не justify-content:flex-end — иначе при переполнении (маленькие экраны)
+		   верх переписки обрезается и не скроллится */
+		> .msg:first-child{
+			margin-top: auto;
+		}
 	}
 
 	.msg{
@@ -232,6 +239,10 @@ body{
 		padding: 12px;
 	}
 	.msg .msg-bubble{
-		max-width: 85%;
+		/* 64px = аватар 56px + gap 8px: бабл не должен вылезать за экран (Apple SE) */
+		max-width: calc(100% - 64px);
+	}
+	.chat-footer .chat-input{
+		min-width: 0; /* позволяем textarea сжиматься во flex-строке */
 	}
 }
