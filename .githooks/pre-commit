@@ -1,0 +1,8 @@
+#!/bin/sh
+# Проверка типов перед каждым коммитом
+echo "==> typecheck"
+npm run typecheck || {
+	echo ""
+	echo "✖ Коммит отменён: есть ошибки типов (npm run typecheck)"
+	exit 1
+}

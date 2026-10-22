@@ -7,7 +7,8 @@
     "start": "vite --port 5000 --open",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 5000",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "author": "",
   "license": "MIT",
