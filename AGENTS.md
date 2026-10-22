@@ -33,7 +33,7 @@ vite.config.js      — base: '/react-bot-test/', порт 5000
 
 - **TypeScript strict.** `npm run typecheck` должен проходить без ошибок; `build` ломается при ошибке типов — это по спеке, не «чинить» отключением tsc.
 - **Базовый путь `/react-bot-test/`** задан в `vite.config.js` ради GitHub Pages — не менять и не удалять.
-- **`dist/` — артефакт сборки.** Не править руками; перегенерируется `npm run build`. CI (`.github/workflows/deploy.yml`) собирает его сам при пуше в `master` (Node 22).
+- **`dist/` — артефакт сборки, в гит не попадает** (в `.gitignore`). Не править руками; перегенерируется `npm run build`. CI (`.github/workflows/deploy.yml`) собирает его сам при пуше в `master` (версия ноды из `.nvmrc`).
 - **Прекоммит-хук.** `.githooks/pre-commit` гоняет typecheck перед каждым коммитом. Подключается через `"prepare": "git config core.hooksPath .githooks"` — не удалять этот скрипт. Сам файл хука должен быть закоммичен.
 - **Стиль кода:** табы для отступов, комментарии на русском, классовый компонент Ivan не переписывать на хуки без отдельной задачи.
 - **Коммиты:** conventional commits (`feat:`, `fix:`, `ci:`, `docs:`, `chore:`).
