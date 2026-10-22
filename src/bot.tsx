@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FAQ = [
+const FAQ: string[] = [
 	'И?',
 	'А если подумать?',
 	'Хммм..',
@@ -10,12 +10,24 @@ const FAQ = [
 	'Подумай хорошо!',
 ];
 
-export class Ivan extends React.Component {
-	constructor(props) {
+interface IvanState {
+	questionArr: string | null;
+	answerArr: string | null;
+	loading: boolean;
+	time: string | null;
+	index: number;
+}
+
+type IvanProps = Record<string, never>;
+
+export class Ivan extends React.Component<IvanProps, IvanState> {
+	textRef: React.RefObject<HTMLTextAreaElement | null>;
+	loadingTimer: ReturnType<typeof setTimeout> | null = null;
+	clearTimer: ReturnType<typeof setTimeout> | null = null;
+
+	constructor(props: IvanProps) {
 		super(props);
 		this.textRef = React.createRef();
-		this.loadingTimer = null;
-		this.clearTimer = null;
 		this.question = this.question.bind(this);
 		this.clearChat = this.clearChat.bind(this);
 		this.state = {
@@ -28,23 +40,24 @@ export class Ivan extends React.Component {
 	}
 
 	question(){
-		if (!this.textRef.current.value) {
+		const textarea = this.textRef.current;
+		if (!textarea || !textarea.value) {
 			return;
 		}
 		// Отменяем таймеры предыдущего вопроса, чтобы запоздалый clearChat
 		// не стёр новый вопрос-ответ при быстрых повторных кликах
-		clearTimeout(this.loadingTimer);
-		clearTimeout(this.clearTimer);
+		if (this.loadingTimer) clearTimeout(this.loadingTimer);
+		if (this.clearTimer) clearTimeout(this.clearTimer);
 		const index = this.state.index;
-		var text = FAQ[index];
+		const text = FAQ[index];
 		this.setState({
-			questionArr: this.textRef.current.value,
+			questionArr: textarea.value,
 			answerArr: text,
 			loading: true,
 			time: this.formatTime(),
 			index: (index + 1) % FAQ.length
 		});
-		this.textRef.current.value = '';
+		textarea.value = '';
 		this.loadingTimer = setTimeout(() => {
 			this.setState({
 				loading: false,
@@ -61,7 +74,7 @@ export class Ivan extends React.Component {
 		});
 	}
 
-	randomAnswer(min, max){
+	randomAnswer(min: number, max: number){
 		return Math.floor(Math.random() * (max - min) + min);
 	}
 
@@ -116,7 +129,7 @@ export class Ivan extends React.Component {
 					<textarea
 						className="chat-input"
 						placeholder="Напишите сообщение…"
-						rows="1"
+						rows={1}
 						defaultValue=""
 						ref={this.textRef}
 						onKeyDown={(e) => {
