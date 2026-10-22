@@ -22,6 +22,7 @@ export class Ivan extends React.Component {
 			questionArr: null,
 			answerArr: null,
 			loading: false,
+			time: null,
 			index: this.randomAnswer(0, FAQ.length - 1)
 		}
 	}
@@ -40,6 +41,7 @@ export class Ivan extends React.Component {
 			questionArr: this.textRef.current.value,
 			answerArr: text,
 			loading: true,
+			time: this.formatTime(),
 			index: (index + 1) % FAQ.length
 		});
 		this.textRef.current.value = '';
@@ -47,14 +49,15 @@ export class Ivan extends React.Component {
 			this.setState({
 				loading: false,
 			});
-			this.clearTimer = setTimeout(this.clearChat, 3000);
+			this.clearTimer = setTimeout(this.clearChat, 5000);
 		}, 1000);
 	}
 
 	clearChat(){
 		this.setState({
 			questionArr: null,
-			answerArr: null
+			answerArr: null,
+			time: null
 		});
 	}
 
@@ -62,28 +65,73 @@ export class Ivan extends React.Component {
 		return Math.floor(Math.random() * (max - min) + min);
 	}
 
+	formatTime(){
+		return new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+	}
+
 	render() {
-		let image = (this.state.answerArr && !this.state.loading) ? <img src="./img/2.jpg" /> : <img src="./img/1.jpg" />;
-		let answer = (this.state.answerArr && !this.state.loading) ? this.state.answerArr : <div className="loading"></div>;
-		let chat = <div className="chat-window">
-								<div className="question">
-									<p>{this.state.questionArr}</p>
-								</div>
-								<div className="answer">{answer}</div>
-							</div>;
-		chat = (!this.state.questionArr && !this.state.answerArr) ? <div className="chat-window"><p>Ну давай же сюда свой вопрос!</p></div> : chat;
-		let textarea = 	<div className="chat-textarea">
-											<textarea className="form-control" defaultValue="" placeholder="Место для глупого вопроса" ref={this.textRef} rows="10"></textarea>
-											<button type="submit" className="btn btn-success pull-right" onClick={this.question}>Задать вопрос</button>
-											<div className="clearfix"></div>
-										</div>;
-		textarea = (!this.state.answerArr) ? textarea : '';
+		let { questionArr, answerArr, loading, time } = this.state;
+		let avatarSrc = (answerArr && !loading) ? './img/2.jpg' : './img/1.jpg';
+
+		let messages;
+		if (!questionArr && !answerArr) {
+			messages = (
+				<div className="msg msg-in">
+					<div className="msg-avatar"><img src="./img/1.jpg" alt="Иван" /></div>
+					<div className="msg-bubble">Ну давай же сюда свой вопрос!</div>
+				</div>
+			);
+		} else {
+			messages = (
+				<React.Fragment>
+					<div className="msg msg-out">
+						<div className="msg-bubble">
+							{questionArr}
+							<span className="msg-time">{time}</span>
+						</div>
+					</div>
+					<div className="msg msg-in">
+						<div className="msg-avatar"><img src={avatarSrc} alt="Иван" /></div>
+						<div className="msg-bubble">
+							{loading ? <span className="typing"><i></i><i></i><i></i></span> : answerArr}
+							{!loading && <span className="msg-time">{time}</span>}
+						</div>
+					</div>
+				</React.Fragment>
+			);
+		}
 
 		return(
 			<div className="chat">
-				<div className="photo">{image}</div>
-	    	{chat}
-	    	{textarea}
+				<div className="chat-header">
+					<div className="chat-header-info">
+						<div className="chat-header-name">Спроси Ваню!</div>
+						<div className="chat-header-status">{loading ? 'печатает…' : 'онлайн (только для тебя)'}</div>
+					</div>
+				</div>
+				<div className="chat-body">
+					{messages}
+				</div>
+				<div className="chat-footer">
+					<textarea
+						className="chat-input"
+						placeholder="Напишите сообщение…"
+						rows="1"
+						defaultValue=""
+						ref={this.textRef}
+						onKeyDown={(e) => {
+							if (e.key === 'Enter' && !e.shiftKey) {
+								e.preventDefault();
+								this.question();
+							}
+						}}
+					></textarea>
+					<button type="submit" className="chat-send" onClick={this.question} aria-label="Отправить">
+						<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+							<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+						</svg>
+					</button>
+				</div>
 			</div>
 		)
 	}
